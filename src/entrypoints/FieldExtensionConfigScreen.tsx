@@ -1,12 +1,30 @@
+import { RenderManualFieldExtensionConfigScreenCtx } from "datocms-plugin-sdk";
+import { MultiValue } from "react-select";
+import { CountryCode } from "libphonenumber-js";
 import { Canvas, Form, SelectField } from "datocms-react-ui";
 import { useState } from "react";
 import { getCountries } from "react-phone-number-input";
 
-export default function FieldExtensionConfigScreen ({ _, ctx }) {
-  const countries = getCountries().map(country => ({ value: country, label: country }));
-  const [includeCountries, setIncludeCountries] = useState();
+type Props = {
+  fieldExtensionId: string;
+  ctx: RenderManualFieldExtensionConfigScreenCtx;
+};
 
-  const handleChange = (newValue) => {
+type SelectOption = MultiValue<{
+  value: CountryCode;
+  label: CountryCode;
+}> | undefined;
+
+export default function FieldExtensionConfigScreen({ ctx }: Props) {
+  const countries = getCountries().map((country) => ({
+    value: country,
+    label: country,
+  }));
+  const [includeCountries, setIncludeCountries] = useState<SelectOption>();
+
+  const handleChange = (
+    newValue: SelectOption,
+  ) => {
     setIncludeCountries(newValue);
   };
 
@@ -20,7 +38,7 @@ export default function FieldExtensionConfigScreen ({ _, ctx }) {
           hint="Leave empty to include all countries"
           selectInputProps={{
             isMulti: true,
-            options: countries
+            options: countries,
           }}
           value={includeCountries}
           onChange={handleChange}
@@ -28,4 +46,4 @@ export default function FieldExtensionConfigScreen ({ _, ctx }) {
       </Form>
     </Canvas>
   );
-};
+}

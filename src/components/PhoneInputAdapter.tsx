@@ -1,6 +1,5 @@
 import { ComponentProps, forwardRef, RefObject } from "react";
-import { TextInput, useCtx } from "datocms-react-ui";
-import { RenderFieldExtensionCtx } from "datocms-plugin-sdk";
+import { TextInput } from "datocms-react-ui";
 
 export const PhoneInputAdapter = forwardRef<
   HTMLInputElement,
