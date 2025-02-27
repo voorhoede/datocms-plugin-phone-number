@@ -1,0 +1,44 @@
+{
+  "name": "datocms-plugin-phonenumber",
+  "description": "A DatoCMS plugin that adds an input field with a country code selector for phone numbers. It outputs the formatted phone number as text, JSON, and a JavaScript object, making it easy to store and use in different formats.",
+  "homepage": "https://github.com/voorhoede/datocms-plugin-phonenumber.git",
+  "private": false,
+  "version": "0.1.0",
+  "author": "Voorhoede <>",
+  "type": "module",
+  "keywords": [
+    "datocms-plugin"
+  ],
+  "datoCmsPlugin": {
+    "title": "Phonenumber",
+    "coverImage": "docs/cover-1200x800.png",
+    "previewImage": "docs/preview.mp4",
+    "entryPoint": "dist/index.html",
+    "permissions": []
+  },
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "datocms-plugin-sdk": "^2.0.9",
+    "datocms-react-ui": "^2.0.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-phone-number-input": "^3.4.11"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1"
+  }
+}
