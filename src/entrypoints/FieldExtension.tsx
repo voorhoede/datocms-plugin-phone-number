@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { RenderFieldExtensionCtx } from "datocms-plugin-sdk";
-import { Canvas } from "datocms-react-ui";
+import { Canvas, FieldError } from "datocms-react-ui";
 import getValue from "../lib/get-value";
-import PhoneInput, { parsePhoneNumber } from "react-phone-number-input";
+import PhoneInput, {  isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 import { PhoneInputAdapter } from "../components/PhoneInputAdapter";
 
 import 'react-phone-number-input/style.css';
@@ -18,12 +18,19 @@ export default function FieldExtension({ ctx }: Props) {
   const [value, setValue] = useState<string>();
 
   const handleChange = async (newValue: string | undefined) => {
+    if (!isValidPhoneNumber(String(newValue))) {
+      ctx.updatePluginParameters({ ...ctx.plugin.attributes.parameters, [ctx.field.id]: { invalid: true } });
+    } else {
+      ctx.updatePluginParameters({ ...ctx.plugin.attributes.parameters, [ctx.field.id]: { invalid: false } });
+    }
+
     if (fieldType === 'json') {
       const parsedValue = parsePhoneNumber(String(newValue));
       const jsonValue = JSON.stringify(parsedValue);
       await ctx.setFieldValue(ctx.fieldPath, jsonValue);
       return;
     }
+
     await ctx.setFieldValue(ctx.fieldPath, newValue);
     setValue(newValue);
   };
@@ -46,6 +53,8 @@ export default function FieldExtension({ ctx }: Props) {
         inputComponent={PhoneInputAdapter}
         international={true}
       />
+
+      { !isValidPhoneNumber(String(value)) && <FieldError>Phone number is invalid</FieldError>}
     </Canvas>
   );
 }

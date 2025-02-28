@@ -22,10 +22,31 @@ connect({
   },
   renderFieldExtension(fieldExtensionId, ctx) {
     return render(
-      <FieldExtension fieldExtensionId={fieldExtensionId} ctx={ctx} />,
+      <FieldExtension
+        fieldExtensionId={fieldExtensionId}
+        ctx={ctx}
+      />,
     );
   },
   renderManualFieldExtensionConfigScreen(fieldExtensionId, ctx) {
-    return render(<FieldExtensionConfigScreen fieldExtensionId={fieldExtensionId} ctx={ctx} />);
-  }
+    return render(
+      <FieldExtensionConfigScreen
+        fieldExtensionId={fieldExtensionId}
+        ctx={ctx}
+      />,
+    );
+  },
+  async onBeforeItemUpsert(_, ctx) {
+    const fields = await ctx.loadFieldsUsingPlugin();
+    const plugin = ctx.plugin;
+
+    for (let field of fields) {
+      if (plugin.attributes.parameters[field.id].invalid) {
+        ctx.alert("Invalid phone number");
+        return false;
+      }
+    }
+
+    return true;
+  },
 });
