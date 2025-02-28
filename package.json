@@ -4,13 +4,13 @@
   "homepage": "https://github.com/voorhoede/datocms-plugin-phonenumber.git",
   "private": false,
   "version": "0.1.0",
-  "author": "Voorhoede <>",
+  "author": "Voorhoede",
   "type": "module",
   "keywords": [
     "datocms-plugin"
   ],
   "datoCmsPlugin": {
-    "title": "Phone-number",
+    "title": "Phone Number",
     "coverImage": "docs/cover-1200x800.png",
     "previewImage": "docs/preview.mp4",
     "entryPoint": "dist/index.html",

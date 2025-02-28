@@ -22,10 +22,7 @@ connect({
   },
   renderFieldExtension(fieldExtensionId, ctx) {
     return render(
-      <FieldExtension
-        fieldExtensionId={fieldExtensionId}
-        ctx={ctx}
-      />,
+      <FieldExtension fieldExtensionId={fieldExtensionId} ctx={ctx} />,
     );
   },
   renderManualFieldExtensionConfigScreen(fieldExtensionId, ctx) {
@@ -41,7 +38,12 @@ connect({
     const plugin = ctx.plugin;
 
     for (let field of fields) {
-      if (plugin.attributes.parameters[field.id].invalid) {
+      const invalid = (
+        plugin.attributes.parameters[field.id] as {
+          [key: typeof field.id]: { invalid: boolean };
+        }
+      ).invalid;
+      if (invalid) {
         ctx.alert("Invalid phone number");
         return false;
       }
