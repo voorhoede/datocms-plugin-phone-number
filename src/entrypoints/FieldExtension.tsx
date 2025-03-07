@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { RenderFieldExtensionCtx } from "datocms-plugin-sdk";
 import { Canvas, FieldError } from "datocms-react-ui";
 import getValue from "../lib/get-value";
-import PhoneInput, {  getCountries, isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
+import PhoneInput, {
+  getCountries,
+  isValidPhoneNumber,
+  parsePhoneNumber,
+} from "react-phone-number-input";
 import { PhoneInputAdapter } from "../components/PhoneInputAdapter";
+import { Parameters } from "../types/parameters";
 
-import 'react-phone-number-input/style.css';
+import "react-phone-number-input/style.css";
 
 type Props = {
   fieldExtensionId: string;
@@ -13,34 +18,41 @@ type Props = {
 };
 
 export default function FieldExtension({ ctx }: Props) {
-  const parameters = ctx.parameters;
+  const parameters = ctx.parameters as Parameters;
   const fieldType = ctx.field.attributes.field_type;
-  const [rawValue] = useState<string | undefined>(getValue<string>(ctx.formValues, ctx.fieldPath));
+  const [rawValue] = useState<string | undefined>(
+    getValue<string>(ctx.formValues, ctx.fieldPath),
+  );
   const [value, setValue] = useState<string>();
-  const countries = getCountries()
-    .filter(country => {
-      const include = parameters.includeCountries as Array<{ label: string, value: string }>;
-      const exclude = parameters.excludeCountries as Array<{ label: string, value: string }>;
+  const countries = getCountries().filter((country) => {
+    const include = parameters.includeCountries;
+    const exclude = parameters.excludeCountries;
 
-      if (include && !include.find(item => item.value === country)) {
-        return false;
-      }
+    if (include && !include.find((item) => item.value === country)) {
+      return false;
+    }
 
-      if (exclude && exclude.find(item => item.value === country)) {
-        return false;
-      }
+    if (exclude && exclude.find((item) => item.value === country)) {
+      return false;
+    }
 
-      return true;
-    });
+    return true;
+  });
 
   const handleChange = async (newValue: string | undefined) => {
     if (!isValidPhoneNumber(String(newValue))) {
-      ctx.updatePluginParameters({ ...ctx.plugin.attributes.parameters, [ctx.field.id]: { invalid: true } });
+      ctx.updatePluginParameters({
+        ...ctx.plugin.attributes.parameters,
+        [ctx.field.id]: { invalid: true },
+      });
     } else {
-      ctx.updatePluginParameters({ ...ctx.plugin.attributes.parameters, [ctx.field.id]: { invalid: false } });
+      ctx.updatePluginParameters({
+        ...ctx.plugin.attributes.parameters,
+        [ctx.field.id]: { invalid: false },
+      });
     }
 
-    if (fieldType === 'json') {
+    if (fieldType === "json") {
       const parsedValue = parsePhoneNumber(String(newValue));
       const jsonValue = JSON.stringify(parsedValue);
       await ctx.setFieldValue(ctx.fieldPath, jsonValue);
@@ -52,13 +64,13 @@ export default function FieldExtension({ ctx }: Props) {
   };
 
   useEffect(() => {
-    if (fieldType === 'json') {
+    if (fieldType === "json") {
       const parsedValue = JSON.parse(String(rawValue));
       if (parsedValue) {
         setValue(parsedValue.number);
       }
     } else {
-      setValue(rawValue as string);
+      setValue(rawValue);
     }
   }, [rawValue]);
 
@@ -74,7 +86,9 @@ export default function FieldExtension({ ctx }: Props) {
         defaultCountry={parameters.defaultCountry?.value}
       />
 
-      { !isValidPhoneNumber(String(value)) && <FieldError>Phone number is invalid</FieldError>}
+      {!isValidPhoneNumber(String(value)) && (
+        <FieldError>Phone number is invalid</FieldError>
+      )}
     </Canvas>
   );
 }

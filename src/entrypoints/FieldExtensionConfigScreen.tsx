@@ -1,9 +1,8 @@
 import { RenderManualFieldExtensionConfigScreenCtx } from "datocms-plugin-sdk";
-import { MultiValue, SingleValue } from "react-select";
-import { CountryCode } from "libphonenumber-js";
 import { Canvas, Form, SelectField } from "datocms-react-ui";
 import { useEffect, useState } from "react";
 import { getCountries } from "react-phone-number-input";
+import { Parameters } from "../types/parameters";
 
 type Props = {
   fieldExtensionId: string;
@@ -11,34 +10,15 @@ type Props = {
 };
 
 export default function FieldExtensionConfigScreen({ ctx }: Props) {
+  const parameters = ctx.parameters as Parameters;
   const countries = getCountries().map((country) => ({
     value: country,
     label: country,
   }));
-  const [defaultCountryOptions, setDefaultCountryOptions] = useState<
-    MultiValue<{
-      value: CountryCode;
-      label: CountryCode;
-    }>
-  >(countries);
-  const [includeCountries, setIncludeCountries] = useState<
-    MultiValue<{
-      value: CountryCode;
-      label: CountryCode;
-    }>
-  >(ctx.parameters.includeCountries || []);
-  const [excludeCountries, setExcludeCountries] = useState<
-    MultiValue<{
-      value: CountryCode;
-      label: CountryCode;
-    }>
-  >(ctx.parameters.excludeCountries || []);
-  const [defaultCountry, setDefaultCountry] = useState<
-    SingleValue<{
-      value: CountryCode;
-      label: CountryCode;
-    }>
-  >(ctx.parameters.defaultCountry);
+  const [defaultCountryOptions, setDefaultCountryOptions] = useState(countries);
+  const [includeCountries, setIncludeCountries] = useState<Parameters['includeCountries']>(parameters.includeCountries);
+  const [excludeCountries, setExcludeCountries] = useState<Parameters['excludeCountries']>(parameters.excludeCountries);
+  const [defaultCountry, setDefaultCountry] = useState<Parameters['defaultCountry']>(parameters.defaultCountry);
 
   useEffect(() => {
     ctx.setParameters({
@@ -51,7 +31,7 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
 
   useEffect(() => {
     if (includeCountries.length > 0) {
-      setDefaultCountryOptions(includeCountries);
+      setDefaultCountryOptions(Array.from(includeCountries));
       return;
     }
     if (excludeCountries.length > 0) {
@@ -112,7 +92,7 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
             options: defaultCountryOptions,
           }}
           value={defaultCountry}
-          onChange={(value) => setDefaultCountry(value)}
+          onChange={(value) => setDefaultCountry(value as Parameters['defaultCountry'])}
         />
       </Form>
     </Canvas>

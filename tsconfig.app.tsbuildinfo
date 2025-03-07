@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/components/countryselectadapter.tsx","./src/components/phoneinputadapter.tsx","./src/entrypoints/configscreen.tsx","./src/entrypoints/fieldextension.tsx","./src/entrypoints/fieldextensionconfigscreen.tsx","./src/lib/get-value.ts","./src/types/parameters.ts","./src/utils/render.tsx"],"version":"5.7.3"}
