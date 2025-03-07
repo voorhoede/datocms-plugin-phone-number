@@ -4,10 +4,24 @@
   "homepage": "https://github.com/voorhoede/datocms-plugin-phonenumber.git",
   "private": false,
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voorhoede/datocms-plugin-phone-number.git"
+  },
   "author": "Voorhoede",
+  "license": "ISC",
   "type": "module",
   "keywords": [
-    "datocms-plugin"
+    "datocms",
+    "datocms-plugin",
+    "custom",
+    "phone",
+    "number",
+    "phone-number",
+    "languages",
+    "verification",
+    "string",
+    "json"
   ],
   "datoCmsPlugin": {
     "title": "Phone Number",
