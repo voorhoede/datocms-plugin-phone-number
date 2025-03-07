@@ -13,7 +13,7 @@ connect({
     return [
       {
         id: "phonenumber",
-        name: "Phonenumber",
+        name: "Phone Number",
         type: "editor",
         fieldTypes: ["string", "json"],
         configurable: true,
