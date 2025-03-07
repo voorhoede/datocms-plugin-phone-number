@@ -12,7 +12,7 @@ connect({
   manualFieldExtensions() {
     return [
       {
-        id: "phonenumber",
+        id: "phoneNumber",
         name: "Phone Number",
         type: "editor",
         fieldTypes: ["string", "json"],
