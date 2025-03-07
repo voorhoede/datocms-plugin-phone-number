@@ -16,8 +16,8 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
     label: country,
   }));
   const [defaultCountryOptions, setDefaultCountryOptions] = useState(countries);
-  const [includeCountries, setIncludeCountries] = useState<Parameters['includeCountries']>(parameters.includeCountries);
-  const [excludeCountries, setExcludeCountries] = useState<Parameters['excludeCountries']>(parameters.excludeCountries);
+  const [includeCountries, setIncludeCountries] = useState<Parameters['includeCountries']>(parameters.includeCountries || []);
+  const [excludeCountries, setExcludeCountries] = useState<Parameters['excludeCountries']>(parameters.excludeCountries || []);
   const [defaultCountry, setDefaultCountry] = useState<Parameters['defaultCountry']>(parameters.defaultCountry);
 
   useEffect(() => {
