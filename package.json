@@ -1,6 +1,6 @@
 {
   "name": "datocms-plugin-phone-number",
-  "description": "A DatoCMS plugin that adds an input field with a country code selector for phone numbers. It outputs the formatted phone number as text and JSON, making it easy to store and use in different formats.",
+  "description": "A powerful DatoCMS plugin that transforms standard fields into smart phone number inputs with country code selection. Validates and formats numbers according to international standards while providing flexible output options (text or JSON) to seamlessly integrate with your development workflow.",
   "homepage": "https://github.com/voorhoede/datocms-plugin-phonenumber.git",
   "private": false,
   "version": "1.0.2",
