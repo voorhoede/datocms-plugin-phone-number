@@ -1,42 +1,57 @@
-import { useEffect, useState } from "react";
-import { SelectInput } from "datocms-react-ui";
+import { ComponentProps, ElementType, useEffect, useState } from "react";
 import { SingleValue } from "react-select";
-import { getCountries } from "react-phone-number-input";
+import { SelectInput } from "datocms-react-ui";
+
+import "./CountrySelectAdapter.css";
+
+type OptionType = { label: string; value: string };
+type Value = SingleValue<OptionType>;
 
 type Props = {
-  value: string;
-  onChange: (value: string) => void;
-};
+  onChange: (newValue: string) => void;
+  iconComponent: ElementType;
+  options?: OptionType[];
+  value?: string;
+} & Omit<ComponentProps<typeof SelectInput>, 'onChange' | 'options' | 'value'>;
 
-type Value = SingleValue<{ label: string; value: string }>;
-
-export const CountrySelectAdapter = ({ value, onChange, ...props }: Props) => {
-  const [rawValue, setRawValue] = useState<Value>();
-
-  const countries = getCountries()
-    .map(country => ({
-      label: country,
-      value: country
-    }));
-
-  const handleChange = (newValue: Value) => {
-    setRawValue(newValue);
-
-    if (onChange && newValue) {
-      onChange(newValue.value);
-    }
-  };
+export const CountrySelectAdapter = ({ value, options = [], onChange, iconComponent, ...props }: Props) => {
+  const Icon = iconComponent;
+  const [rawValue, setRawValue] = useState<Value>(
+    options.find((option) => option.value === value) || null
+  );
 
   useEffect(() => {
-    setRawValue(countries.find(country => country.value === value));
-  }, [value]);
+    setRawValue(options.find((option) => option.value === value) || null);
+  }, [value, options]);
+
+  useEffect(() => {
+    if (rawValue) {
+      onChange(rawValue.value);
+    }
+  }, [rawValue, onChange]);
+
+  const handleChange = (newValue: unknown) => {
+    setRawValue(newValue as Value);
+  };
+
+  const formatOptionLabel = (data: unknown) => {
+    const option = data as OptionType;
+    return (
+      <div className="country-select-option">
+        <Icon country={option.value} label={option.label} />
+        <span className="country-select-option__label">{option.label}</span>
+      </div>
+    );
+  };
 
   return (
     <SelectInput
-      {...props}
-      onChange={handleChange}
+      className="country-select-input"
       value={rawValue}
-      options={countries}
+      onChange={handleChange}
+      options={options}
+      formatOptionLabel={formatOptionLabel}
+      {...props}
     />
   );
 };

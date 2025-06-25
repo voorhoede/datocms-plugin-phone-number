@@ -22,7 +22,7 @@ export const PhoneInputAdapter = forwardRef<
     <TextInput
       inputRef={ref as RefObject<HTMLInputElement>}
       value={value}
-      error={!valid}
+      error={(String(value).length > 0 && !valid)}
       onChange={handleChange}
       {...props}
     />

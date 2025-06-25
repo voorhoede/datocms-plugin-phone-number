@@ -8,6 +8,7 @@ import PhoneInput, {
   parsePhoneNumber,
 } from "react-phone-number-input";
 import { PhoneInputAdapter } from "../components/PhoneInputAdapter";
+import { CountrySelectAdapter } from "../components/CountrySelectAdapter";
 import { Parameters } from "../types/parameters";
 
 import "react-phone-number-input/style.css";
@@ -40,7 +41,7 @@ export default function FieldExtension({ ctx }: Props) {
   });
 
   const handleChange = async (newValue: string | undefined) => {
-    if (!isValidPhoneNumber(String(newValue))) {
+    if (newValue && !isValidPhoneNumber(String(newValue))) {
       ctx.updatePluginParameters({
         ...ctx.plugin.attributes.parameters,
         [ctx.field.id]: { invalid: true },
@@ -81,12 +82,13 @@ export default function FieldExtension({ ctx }: Props) {
         value={value}
         onChange={handleChange}
         inputComponent={PhoneInputAdapter}
+        countrySelectComponent={CountrySelectAdapter}
         international={true}
         countries={countries}
         defaultCountry={parameters.defaultCountry?.value}
       />
 
-      {!isValidPhoneNumber(String(value)) && (
+      {value && !isValidPhoneNumber(String(value)) && (
         <FieldError>Phone number is invalid</FieldError>
       )}
     </Canvas>
