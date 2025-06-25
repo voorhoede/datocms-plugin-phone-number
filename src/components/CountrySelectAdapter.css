@@ -1,0 +1,16 @@
+.country-select-input {
+    width: 180px;
+    margin-inline-end: 10px;
+}
+
+.country-select-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.country-select-option__label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
