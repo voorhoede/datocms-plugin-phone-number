@@ -14,24 +14,26 @@ type Props = {
   value?: string;
 } & Omit<ComponentProps<typeof SelectInput>, 'onChange' | 'options' | 'value'>;
 
-export const CountrySelectAdapter = ({ value, options = [], onChange, iconComponent, ...props }: Props) => {
+export const CountrySelectAdapter = ({
+  value,
+  options = [],
+  onChange,
+  iconComponent,
+  ...props
+}: Props) => {
   const Icon = iconComponent;
   const [rawValue, setRawValue] = useState<Value>(
     options.find((option) => option.value === value) || null
   );
 
   useEffect(() => {
-    setRawValue(options.find((option) => option.value === value) || null);
+    const rawValue = options.find((option) => option.value === value) || null;
+    setRawValue(rawValue);
   }, [value, options]);
-
-  useEffect(() => {
-    if (rawValue) {
-      onChange(rawValue.value);
-    }
-  }, [rawValue, onChange]);
 
   const handleChange = (newValue: unknown) => {
     setRawValue(newValue as Value);
+    onChange((newValue as Value)?.value || "");
   };
 
   const formatOptionLabel = (data: unknown) => {
