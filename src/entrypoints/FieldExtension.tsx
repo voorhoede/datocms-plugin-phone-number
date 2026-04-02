@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { RenderFieldExtensionCtx } from "datocms-plugin-sdk";
 import { Canvas, FieldError } from "datocms-react-ui";
 import getValue from "../lib/get-value";
@@ -19,44 +19,55 @@ type Props = {
 };
 
 export default function FieldExtension({ ctx }: Props) {
+  const { setHeight, startAutoResizer, stopAutoResizer } = ctx;
   const parameters = ctx.parameters as Parameters;
   const fieldType = ctx.field.attributes.field_type;
+
   const [rawValue] = useState<string | undefined>(
     getValue<string>(ctx.formValues, ctx.fieldPath),
   );
   const [value, setValue] = useState<string>();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Manually manage iframe height when the country dropdown opens.
+   */
+  const handleMenuOpen = useCallback(() => {
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.getBoundingClientRect().height;
+
+      stopAutoResizer();
+
+      setHeight(Math.max(currentHeight, 360) + 10);
+    }
+  }, [stopAutoResizer, setHeight]);
+
+  const handleMenuClose = useCallback(() => {
+    startAutoResizer();
+  }, [startAutoResizer]);
+
   const countries = getCountries().filter((country) => {
     const include = parameters.includeCountries;
     const exclude = parameters.excludeCountries;
 
-    if (include && !include.find((item) => item.value === country)) {
-      return false;
-    }
-
-    if (exclude && exclude.find((item) => item.value === country)) {
-      return false;
-    }
+    if (include && !include.find((item) => item.value === country)) return false;
+    if (exclude && exclude.find((item) => item.value === country)) return false;
 
     return true;
   });
 
   const handleChange = async (newValue: string | undefined) => {
-    if (newValue && !isValidPhoneNumber(String(newValue))) {
-      ctx.updatePluginParameters({
-        ...ctx.plugin.attributes.parameters,
-        [ctx.field.id]: { invalid: true },
-      });
-    } else {
-      ctx.updatePluginParameters({
-        ...ctx.plugin.attributes.parameters,
-        [ctx.field.id]: { invalid: false },
-      });
-    }
+    const isValid = newValue ? isValidPhoneNumber(String(newValue)) : true;
 
-    if (fieldType === "json") {
+    ctx.updatePluginParameters({
+      ...ctx.plugin.attributes.parameters,
+      [ctx.field.id]: { invalid: !isValid },
+    });
+
+    if (fieldType === "json" && newValue) {
       const parsedValue = parsePhoneNumber(String(newValue));
-      const jsonValue = JSON.stringify(parsedValue);
-      await ctx.setFieldValue(ctx.fieldPath, jsonValue);
+      await ctx.setFieldValue(ctx.fieldPath, JSON.stringify(parsedValue));
       return;
     }
 
@@ -65,32 +76,44 @@ export default function FieldExtension({ ctx }: Props) {
   };
 
   useEffect(() => {
-    if (fieldType === "json") {
-      const parsedValue = JSON.parse(String(rawValue));
-      if (parsedValue) {
-        setValue(parsedValue.number);
+    if (fieldType === "json" && rawValue) {
+      try {
+        const parsed = JSON.parse(String(rawValue));
+        setValue(parsed?.number);
+      } catch (e) {
+        setValue(undefined);
       }
     } else {
       setValue(rawValue);
     }
-  }, [rawValue]);
+  }, [rawValue, fieldType]);
 
   return (
     <Canvas ctx={ctx}>
-      <PhoneInput
-        id={ctx.fieldPath}
-        value={value}
-        onChange={handleChange}
-        inputComponent={PhoneInputAdapter}
-        countrySelectComponent={CountrySelectAdapter}
-        international={true}
-        countries={countries}
-        defaultCountry={parameters.defaultCountry?.value}
-      />
+      <div
+        ref={containerRef}
+        style={{ overflow: 'visible', position: 'relative' }}
+      >
+        <PhoneInput
+          id={ctx.fieldPath}
+          value={value}
+          onChange={handleChange}
+          inputComponent={PhoneInputAdapter}
+          countrySelectComponent={CountrySelectAdapter}
+          // Pass resize handlers safely via countrySelectProps to avoid console warnings
+          countrySelectProps={{
+            onMenuOpen: handleMenuOpen,
+            onMenuClose: handleMenuClose,
+          }}
+          international={true}
+          countries={countries}
+          defaultCountry={parameters.defaultCountry?.value}
+        />
 
-      {value && !isValidPhoneNumber(String(value)) && (
-        <FieldError>Phone number is invalid</FieldError>
-      )}
+        {value && !isValidPhoneNumber(String(value)) && (
+          <FieldError>Phone number is invalid</FieldError>
+        )}
+      </div>
     </Canvas>
   );
 }
