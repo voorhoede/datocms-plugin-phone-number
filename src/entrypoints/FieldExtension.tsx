@@ -30,15 +30,14 @@ export default function FieldExtension({ ctx }: Props) {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * Manually manage iframe height when the country dropdown opens.
-   */
   const handleMenuOpen = useCallback(() => {
     if (containerRef.current) {
       const currentHeight = containerRef.current.getBoundingClientRect().height;
 
       stopAutoResizer();
 
+      // Ensure the canvas is tall enough to show the entire menu (min 360px)
+      // and account for container padding (20px).
       setHeight(Math.max(currentHeight, 360) + 10);
     }
   }, [stopAutoResizer, setHeight]);
@@ -81,6 +80,7 @@ export default function FieldExtension({ ctx }: Props) {
         const parsed = JSON.parse(String(rawValue));
         setValue(parsed?.number);
       } catch (e) {
+        console.error(e);
         setValue(undefined);
       }
     } else {
@@ -100,7 +100,6 @@ export default function FieldExtension({ ctx }: Props) {
           onChange={handleChange}
           inputComponent={PhoneInputAdapter}
           countrySelectComponent={CountrySelectAdapter}
-          // Pass resize handlers safely via countrySelectProps to avoid console warnings
           countrySelectProps={{
             onMenuOpen: handleMenuOpen,
             onMenuClose: handleMenuClose,
