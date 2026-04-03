@@ -18,6 +18,8 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
     stopAutoResizer();
     if (containerRef.current) {
       const currentHeight = containerRef.current.getBoundingClientRect().height;
+
+      // Ensure the canvas is tall enough to show the entire menu (min 330px)
       setHeight(currentHeight + 330);
     }
   }, [stopAutoResizer, setHeight]);
@@ -30,9 +32,15 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
     label: country,
   }));
   const [defaultCountryOptions, setDefaultCountryOptions] = useState(countries);
-  const [includeCountries, setIncludeCountries] = useState<Parameters['includeCountries']>(parameters.includeCountries || []);
-  const [excludeCountries, setExcludeCountries] = useState<Parameters['excludeCountries']>(parameters.excludeCountries || []);
-  const [defaultCountry, setDefaultCountry] = useState<Parameters['defaultCountry']>(parameters.defaultCountry);
+  const [includeCountries, setIncludeCountries] = useState<
+    Parameters["includeCountries"]
+  >(parameters.includeCountries || []);
+  const [excludeCountries, setExcludeCountries] = useState<
+    Parameters["excludeCountries"]
+  >(parameters.excludeCountries || []);
+  const [defaultCountry, setDefaultCountry] = useState<
+    Parameters["defaultCountry"]
+  >(parameters.defaultCountry);
 
   useEffect(() => {
     ctx.setParameters({
@@ -113,7 +121,9 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
               onMenuClose: handleMenuClose,
             }}
             value={defaultCountry}
-            onChange={(value) => setDefaultCountry(value as Parameters['defaultCountry'])}
+            onChange={(value) =>
+              setDefaultCountry(value as Parameters["defaultCountry"])
+            }
           />
         </Form>
       </div>
