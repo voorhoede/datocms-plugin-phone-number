@@ -14,7 +14,7 @@ type Props = {
   value?: string;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
-} & Omit<ComponentProps<typeof SelectInput>, 'onChange' | 'options' | 'value'>;
+} & Omit<ComponentProps<typeof SelectInput>, "onChange" | "options" | "value">;
 
 export const CountrySelectAdapter = ({
   value,
@@ -27,12 +27,12 @@ export const CountrySelectAdapter = ({
 }: Props) => {
   const Icon = iconComponent;
   const [rawValue, setRawValue] = useState<Value>(
-    options.find((option) => option.value === value) || null
+    options.find((option) => option.value === value) || null,
   );
 
   useEffect(() => {
-    const found = options.find((option) => option.value === value) || null;
-    setRawValue(found);
+    const rawValue = options.find((option) => option.value === value) || null;
+    setRawValue(rawValue);
   }, [value, options]);
 
   const handleChange = (newValue: unknown) => {
@@ -40,7 +40,6 @@ export const CountrySelectAdapter = ({
     setRawValue(val);
     onChange(val?.value || "");
 
-    // Ensure the iframe resets height immediately after selection
     if (onMenuClose) onMenuClose();
   };
 
