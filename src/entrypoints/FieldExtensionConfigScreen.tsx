@@ -9,16 +9,18 @@ type Props = {
   ctx: RenderManualFieldExtensionConfigScreenCtx;
 };
 
+const MAX_MENU_HEIGHT = 200;
+
 export default function FieldExtensionConfigScreen({ ctx }: Props) {
   const { setHeight, startAutoResizer, stopAutoResizer } = ctx;
   const parameters = ctx.parameters as Parameters;
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMenuOpen = useCallback(() => {
+    stopAutoResizer();
     if (containerRef.current) {
       const currentHeight = containerRef.current.getBoundingClientRect().height;
-      stopAutoResizer();
-      setHeight(Math.max(currentHeight, 360) + 10);
+      setHeight(currentHeight + MAX_MENU_HEIGHT);
     }
   }, [stopAutoResizer, setHeight]);
 
@@ -78,6 +80,8 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
               isMulti: true,
               options: countries,
               isDisabled: excludeCountries.length > 0,
+              menuPosition: 'fixed' as const,
+              maxMenuHeight: MAX_MENU_HEIGHT,
               onMenuOpen: handleMenuOpen,
               onMenuClose: handleMenuClose,
             }}
@@ -97,6 +101,8 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
               isMulti: true,
               options: countries,
               isDisabled: includeCountries.length > 0,
+              menuPosition: 'fixed' as const,
+              maxMenuHeight: MAX_MENU_HEIGHT,
               onMenuOpen: handleMenuOpen,
               onMenuClose: handleMenuClose,
             }}
@@ -109,6 +115,8 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
             name="default_country"
             selectInputProps={{
               options: defaultCountryOptions,
+              menuPosition: 'fixed' as const,
+              maxMenuHeight: MAX_MENU_HEIGHT,
               onMenuOpen: handleMenuOpen,
               onMenuClose: handleMenuClose,
             }}
