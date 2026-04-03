@@ -1,6 +1,6 @@
 import { RenderManualFieldExtensionConfigScreenCtx } from "datocms-plugin-sdk";
 import { Canvas, Form, SelectField } from "datocms-react-ui";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCountries } from "react-phone-number-input";
 import { Parameters } from "../types/parameters";
 
@@ -10,7 +10,21 @@ type Props = {
 };
 
 export default function FieldExtensionConfigScreen({ ctx }: Props) {
+  const { setHeight, startAutoResizer, stopAutoResizer } = ctx;
   const parameters = ctx.parameters as Parameters;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMenuOpen = useCallback(() => {
+    if (containerRef.current) {
+      const currentHeight = containerRef.current.getBoundingClientRect().height;
+      stopAutoResizer();
+      setHeight(Math.max(currentHeight, 360) + 10);
+    }
+  }, [stopAutoResizer, setHeight]);
+
+  const handleMenuClose = useCallback(() => {
+    startAutoResizer();
+  }, [startAutoResizer]);
   const countries = getCountries().map((country) => ({
     value: country,
     label: country,
@@ -49,52 +63,60 @@ export default function FieldExtensionConfigScreen({ ctx }: Props) {
 
   return (
     <Canvas ctx={ctx}>
-      <Form>
-        <SelectField
-          id="include_countries"
-          label="Include countries"
-          name="include_countries"
-          hint={
-            excludeCountries.length > 0
-              ? "Empty Exclude countries if you want to include countries"
-              : "Leave empty to include all countries"
-          }
-          selectInputProps={{
-            isMulti: true,
-            options: countries,
-            isDisabled: excludeCountries.length > 0,
-          }}
-          value={includeCountries}
-          onChange={(value) => setIncludeCountries(value)}
-        />
-        <SelectField
-          id="exclude_countries"
-          label="Exclude countries"
-          name="exclude_countries"
-          hint={
-            includeCountries.length > 0
-              ? "Empty Include countries if you want to exclude countries"
-              : "Leave empty to exclude no countries"
-          }
-          selectInputProps={{
-            isMulti: true,
-            options: countries,
-            isDisabled: includeCountries.length > 0,
-          }}
-          value={excludeCountries}
-          onChange={(value) => setExcludeCountries(value)}
-        />
-        <SelectField
-          id="default_country"
-          label="Default country"
-          name="default_country"
-          selectInputProps={{
-            options: defaultCountryOptions,
-          }}
-          value={defaultCountry}
-          onChange={(value) => setDefaultCountry(value as Parameters['defaultCountry'])}
-        />
-      </Form>
+      <div ref={containerRef}>
+        <Form>
+          <SelectField
+            id="include_countries"
+            label="Include countries"
+            name="include_countries"
+            hint={
+              excludeCountries.length > 0
+                ? "Empty Exclude countries if you want to include countries"
+                : "Leave empty to include all countries"
+            }
+            selectInputProps={{
+              isMulti: true,
+              options: countries,
+              isDisabled: excludeCountries.length > 0,
+              onMenuOpen: handleMenuOpen,
+              onMenuClose: handleMenuClose,
+            }}
+            value={includeCountries}
+            onChange={(value) => setIncludeCountries(value)}
+          />
+          <SelectField
+            id="exclude_countries"
+            label="Exclude countries"
+            name="exclude_countries"
+            hint={
+              includeCountries.length > 0
+                ? "Empty Include countries if you want to exclude countries"
+                : "Leave empty to exclude no countries"
+            }
+            selectInputProps={{
+              isMulti: true,
+              options: countries,
+              isDisabled: includeCountries.length > 0,
+              onMenuOpen: handleMenuOpen,
+              onMenuClose: handleMenuClose,
+            }}
+            value={excludeCountries}
+            onChange={(value) => setExcludeCountries(value)}
+          />
+          <SelectField
+            id="default_country"
+            label="Default country"
+            name="default_country"
+            selectInputProps={{
+              options: defaultCountryOptions,
+              onMenuOpen: handleMenuOpen,
+              onMenuClose: handleMenuClose,
+            }}
+            value={defaultCountry}
+            onChange={(value) => setDefaultCountry(value as Parameters['defaultCountry'])}
+          />
+        </Form>
+      </div>
     </Canvas>
   );
 }
